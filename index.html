@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkyCommerce 3D-Druck Service</title>
+  <!-- Font Awesome für Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ==== BASIS ==== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    :root { --nav-h: 64px; } /* Höhe Sticky-Navigation */
+    body {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #0d1b2a, #1b263b, #0d1b2a);
+      color: #f4f4f4;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* Anchor-Offset, damit Überschriften nicht unter die Nav rutschen */
+    section, header, #top, #services, #why, #process, #customers, #faq, #contact {
+      scroll-margin-top: var(--nav-h);
+    }
+    @media (max-width: 900px) {
+      :root { --nav-h: 76px; }
+    }
+
+    /* ==== NAV ==== */
+    .nav-wrap {
+      position: sticky; top: 0; z-index: 9999;
+      backdrop-filter: blur(10px);
+      background: rgba(13, 27, 42, 0.7);
+      border-bottom: 1px solid rgba(42, 62, 87, 0.6);
+    }
+    .nav {
+      max-width: 1200px; margin: 0 auto; padding: 12px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 0.3px; }
+    .brand i { color: #00CFFF; }
+    .nav-links { display: flex; gap: 18px; align-items: center; list-style: none; }
+    .nav-links a { padding: 8px 10px; border-radius: 8px; color: #d9e6ff; }
+    .nav-links a:hover { background: rgba(0, 207, 255, 0.1); }
+    .nav-cta { padding: 10px 14px; border-radius: 8px; background: linear-gradient(135deg, #007BFF, #00CFFF); color: white; font-weight: 700; }
+    .hamburger { display: none; font-size: 1.4rem; color: #d9e6ff; background: none; border: none; cursor: pointer; }
+
+    @media (max-width: 900px) {
+      .hamburger { display: block; }
+      .nav-links {
+        position: fixed; top: calc(var(--nav-h)); right: 12px; left: 12px;
+        background: rgba(13, 27, 42, 0.95);
+        border: 1px solid rgba(42, 62, 87, 0.6);
+        border-radius: 12px; padding: 12px;
+        flex-direction: column; gap: 10px; display: none;
+      }
+      .nav-links.show { display: flex; }
+    }
+
+    /* ==== HERO ==== */
+    header {
+      height: 100vh;
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.6)), url('hero.png') center/cover no-repeat;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center; color: white; padding: 0 20px;
+    }
+    header h1 { font-size: 3rem; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.7); }
+    header p  { font-size: 1.3rem; margin-bottom: 30px; text-shadow: 1px 1px 5px rgba(0,0,0,0.6); }
+    header .btn { background-color: #007BFF; color: white; padding: 15px 35px; border-radius: 8px; font-weight: bold; transition: 0.3s; }
+    header .btn:hover { background-color: #00CFFF; }
+
+    /* ==== SEKTIONEN & TITEL ==== */
+    section { padding: 80px 20px; max-width: 1200px; margin: 0 auto; }
+    .section-title { text-align: center; margin-bottom: 60px; }
+    .section-title h2 { font-size: 2.5rem; color: #00CFFF; }
+
+    /* ==== CARDS (Leistungen) ==== */
+    .cards { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+    .card {
+      background-color: #1e2a3a; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      padding: 30px; flex: 1 1 300px; max-width: 320px; text-align: center; transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover { transform: translateY(-10px); box-shadow: 0 20px 35px rgba(0,0,0,0.8); }
+    .card i { font-size: 2rem; color: #00CFFF; margin-bottom: 15px; }
+    .card h3 { color: #00CFFF; margin-bottom: 15px; font-size: 1.4rem; }
+    .card p  { font-size: 1rem; color: #ccc; }
+
+    /* ==== TRUST & PRICE ==== */
+    .trust { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 30px; }
+    .trust-badge { flex: 1 1 200px; max-width: 260px; background: #1e2a3a; border: 1px solid #2a3e57; border-radius: 12px; padding: 20px; text-align: center; }
+    .trust-badge i { font-size: 1.8rem; color: #00CFFF; margin-bottom: 10px; }
+    .trust-badge h3 { color: #00CFFF; margin-bottom: 10px; }
+    .price-box { text-align: center; background: #1e2a3a; border: 2px dashed #007BFF; border-radius: 12px; padding: 30px; margin-top: 40px; }
+    .price-box h3 { color: #00CFFF; font-size: 2rem; margin-bottom: 10px; }
+    .price-box p  { font-size: 1.1rem; color: #ccc; }
+
+    /* ==== ABLAUF ==== */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .step { display: flex; gap: 16px; align-items: flex-start; padding: 18px; border: 1px solid #2a3e57; border-radius: 12px; background: #1e2a3a; }
+    .step i { font-size: 1.5rem; color: #00CFFF; margin-right: 10px; }
+
+    /* ==== Kunden-Logos ==== */
+    .block { background: #1e2a3a; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); padding: 40px; }
+    .logos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: center; }
+    .logo  { height: 46px; background: #172131; border: 1px dashed #2a3e57; border-radius: 10px; display: grid; place-items: center; color: #6b88b6; font-weight: 700; }
+
+    /* ==== FAQ ==== */
+    .faq-item { border: 1px solid #2a3e57; border-radius: 12px; overflow: hidden; }
+    .faq-q { background: #1e2a3a; padding: 16px 18px; cursor: pointer; font-weight: 700; color: #00CFFF; display: flex; align-items: center; gap: 10px; }
+    .faq-q i { color: #00CFFF; }
+    .faq-a { display: none; padding: 16px 18px; background: #0d1b2a; color: #ccc; }
+
+    /* ==== CTA ==== */
+    .cta {
+      background: linear-gradient(135deg, #007BFF, #00CFFF); color: white; text-align: center; padding: 80px 20px;
+      border-radius: 20px; margin: 60px auto; max-width: 1000px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .cta h2 { font-size: 2rem; margin-bottom: 20px; }
+    .cta a { display: inline-block; margin-top: 20px; padding: 15px 35px; background: white; color: #007BFF; font-weight: bold; border-radius: 8px; transition: 0.3s; }
+    .cta a:hover { background: #e6e6e6; }
+
+    /* ==== Kontakt & Footer ==== */
+    #contact { background-color: #0d1b2a; color: white; text-align: center; padding: 80px 20px; }
+    #contact h2 { color: #00CFFF; margin-bottom: 30px; }
+    #contact a { display: inline-block; margin: 10px; padding: 15px 30px; border-radius: 8px; background-color: #007BFF; color: white; font-weight: bold; transition: 0.3s; }
+    #contact a:hover { background-color: #00CFFF; }
+    footer { text-align: center; padding: 30px 20px; background-color: #1b263b; color: #aaa; }
+
+    /* ==== Scroll-Reveal ==== */
+    .reveal { opacity: 0; transform: translateY(22px) scale(0.98); transition: opacity 600ms ease, transform 600ms ease, filter 600ms ease; filter: blur(2px); will-change: opacity, transform, filter; }
+    .reveal.reveal-visible { opacity: 1; transform: none; filter: none; }
+    .reveal.delay-1 { transition-delay: 80ms; }
+    .reveal.delay-2 { transition-delay: 160ms; }
+    .reveal.delay-3 { transition-delay: 240ms; }
+    .reveal.delay-4 { transition-delay: 320ms; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+      html { scroll-behavior: auto; }
+    }
+
+    /* ==== Responsive ==== */
+    @media (max-width: 900px) {
+      .grid-2, .logos { grid-template-columns: 1fr; }
+      .trust { flex-direction: column; align-items: center; }
+    }
+    @media (max-width: 768px) {
+      header h1 { font-size: 2.2rem; }
+      header p  { font-size: 1.1rem; }
+      section   { padding: 60px 10px; }
+      .cards    { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <div class="nav-wrap" aria-label="Hauptnavigation">
+    <nav class="nav">
+      <div class="brand"><i class="fa-solid fa-cube"></i> SkyCommerce</div>
+      <button class="hamburger" aria-label="Menü öffnen/schließen"><i class="fa-solid fa-bars"></i></button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#top">Start</a></li>
+        <li><a href="#services">Leistungen</a></li>
+        <li><a href="#why">Warum wir</a></li>
+        <li><a href="#process">Ablauf</a></li>
+        <li><a href="#customers">Kunden</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a class="nav-cta" href="#contact">Kontakt</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- HERO -->
+  <div id="top"></div>
+  <header>
+    <h1 class="reveal">SkyCommerce 3D-Druck Service</h1>
+    <p class="reveal delay-1">Schneller und zuverlässiger 3D-Druck für Prototypen, Klein- & Großserien</p>
+    <a href="#contact" class="btn reveal delay-2">Jetzt Anfragen</a>
+  </header>
+
+  <!-- LEISTUNGEN -->
+  <section id="services">
+    <div class="section-title reveal"><h2>Unsere Leistungen</h2></div>
+    <div class="cards">
+      <div class="card reveal"><i class="fas fa-cogs"></i><h3>Prototypen</h3><p>Individuelle Prototypen für Produktentwicklung und Testläufe.</p></div>
+      <div class="card reveal delay-1"><i class="fas fa-box"></i><h3>Kleinserien</h3><p>Fertigung kleiner Serienmengen für Marketing & Produktlaunch.</p></div>
+      <div class="card reveal delay-2"><i class="fas fa-industry"></i><h3>Großserien</h3><p>Effiziente Produktion größerer Stückzahlen mit gleichbleibender Qualität.</p></div>
+      <div class="card reveal delay-3"><i class="fas fa-palette"></i><h3>Materialvielfalt</h3><p>PLA, PETG, ABS, TPU – Beratung bei der Materialwahl inklusive.</p></div>
+    </div>
+  </section>
+
+  <!-- WARUM WIR + TRUST + PREIS -->
+  <section id="why">
+    <div class="section-title reveal"><h2>Warum SkyCommerce?</h2></div>
+    <div class="trust">
+      <div class="trust-badge reveal"><i class="fas fa-shipping-fast"></i><h3>🚀 Schnelle Lieferung</h3><p>Standard 1–3 Werktage, Express möglich.</p></div>
+      <div class="trust-badge reveal delay-1"><i class="fas fa-flag"></i><h3>🇩🇪 Made in NRW</h3><p>Produktion in Dorsten – kurze Wege.</p></div>
+      <div class="trust-badge reveal delay-2"><i class="fas fa-comments"></i><h3>💬 Kostenlose Beratung</h3><p>Unterstützung bei Materialwahl & Optimierung.</p></div>
+      <div class="trust-badge reveal delay-3"><i class="fas fa-lock"></i><h3>🔒 Verlässlichkeit</h3><p>Transparente Kommunikation & feste Ansprechpartner.</p></div>
+    </div>
+    <div class="price-box reveal delay-2">
+      <h3>ab 9,90 € pro Teil</h3>
+      <p>Faire Kalkulation nach Gewicht, Material & Aufwand.</p>
+    </div>
+  </section>
+
+  <!-- ABLAUF -->
+  <section id="process">
+    <div class="section-title reveal"><h2>So läuft’s ab</h2></div>
+    <div class="grid-2">
+      <div class="step reveal"><i class="fas fa-file-upload"></i><div><strong>Anfrage & Daten</strong><p class="muted">Sende uns dein CAD/STL inkl. Material & Stückzahl.</p></div></div>
+      <div class="step reveal delay-1"><i class="fas fa-search"></i><div><strong>Machbarkeitscheck</strong><p class="muted">Wir prüfen Toleranzen & beraten dich.</p></div></div>
+      <div class="step reveal delay-2"><i class="fas fa-clipboard-check"></i><div><strong>Angebot & Start</strong><p class="muted">Nach Freigabe starten wir sofort.</p></div></div>
+      <div class="step reveal delay-3"><i class="fas fa-truck"></i><div><strong>QS & Versand</strong><p class="muted">Maß-/Sichtprüfung, sichere Verpackung & Tracking.</p></div></div>
+    </div>
+  </section>
+
+  <!-- KUNDEN -->
+  <section id="customers">
+    <div class="section-title reveal"><h2>Unsere Kunden</h2></div>
+    <div class="block reveal">
+      <p class="muted">Von Startups bis Mittelstand – unsere Kunden schätzen Tempo, Präzision & persönliche Betreuung.</p>
+      <div class="logos" style="margin-top:18px;">
+        <div class="logo reveal">Startup</div>
+        <div class="logo reveal delay-1">Engineering</div>
+        <div class="logo reveal delay-2">Architektur</div>
+        <div class="logo reveal delay-3">E-Com</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="section-title reveal"><h2>FAQ</h2></div>
+    <div class="grid-2">
+      <div class="faq-item reveal">
+        <div class="faq-q"><i class="fas fa-question-circle"></i> Welche Toleranzen?</div>
+        <div class="faq-a">Typ. ±0,2 mm bei FDM. Für Passungen stimmen wir ab.</div>
+      </div>
+      <div class="faq-item reveal delay-1">
+        <div class="faq-q"><i class="fas fa-question-circle"></i> Lieferzeiten?</div>
+        <div class="faq-a">1–3 Werktage, Express nach Absprache.</div>
+      </div>
+      <div class="faq-item reveal delay-2">
+        <div class="faq-q"><i class="fas fa-question-circle"></i> Welche Materialien?</div>
+        <div class="faq-a">PLA, PETG, ABS, TPU. Weitere auf Anfrage.</div>
+      </div>
+      <div class="faq-item reveal delay-3">
+        <div class="faq-q"><i class="fas fa-question-circle"></i> Übernehmt ihr das Slicing?</div>
+        <div class="faq-a">Ja, inkl. Orientierung, Infill & Support-Strategie.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta reveal">
+    <h2>Bereit für dein Projekt?</h2>
+    <p>Fordere jetzt ein unverbindliches Angebot an – wir beraten dich kostenlos.</p>
+    <a href="mailto:info@sky-commerce.net">Angebot anfordern</a>
+  </section>
+
+  <!-- KONTAKT -->
+  <section id="contact">
+    <h2 class="reveal">Kontakt</h2>
+    <p class="reveal delay-1">Schreibe uns oder ruf uns an – wir helfen dir gerne!</p>
+    <a class="reveal delay-2" href="mailto:info@sky-commerce.net">E-Mail</a>
+    <a class="reveal delay-3" href="tel:+491628692042">Anrufen</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    &copy; 2022 SkyCommerce UG – 3D-Druck Service aus Dorsten
+  </footer>
+
+  <!-- JS: Mobile Nav + FAQ Toggle + Scroll-Reveal -->
+  <script>
+    // Mobile-Navi
+    const burger = document.querySelector('.hamburger');
+    const links  = document.getElementById('navLinks');
+    burger.addEventListener('click', () => links.classList.toggle('show'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('show')));
+
+    // FAQ Toggle
+    document.querySelectorAll('.faq-q').forEach(q => {
+      q.addEventListener('click', () => {
+        const a = q.nextElementSibling;
+        const isOpen = a.style.display === 'block';
+        document.querySelectorAll('.faq-a').forEach(el => el.style.display = 'none');
+        a.style.display = isOpen ? 'none' : 'block';
+      });
+    });
+
+    // Scroll-Reveal
+    (function() {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) return;
+      const revealEls = document.querySelectorAll('.reveal');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -5% 0px', threshold: 0.15 });
+      revealEls.forEach(el => io.observe(el));
+    })();
+  </script>
+</body>
+</html>
