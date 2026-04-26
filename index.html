@@ -1,0 +1,1344 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SkyCommerce — 3D-Druck aus NRW</title>
+<meta name="description" content="SkyCommerce UG — 3D-Druck aus Dorsten/NRW. Designprodukte für Endkunden auf Etsy (PrintrixStudio) & 3D-Druck-Dienstleistung für Geschäftskunden." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* ==========================================================
+   TOKENS
+   ========================================================== */
+:root{
+  --bg:#07080a;
+  --bg-2:#0c0e12;
+  --bg-3:#11141a;
+  --line:rgba(255,255,255,.07);
+  --line-2:rgba(255,255,255,.12);
+  --ink:#eef0f3;
+  --ink-2:#b8bdc7;
+  --ink-3:#7a808c;
+  --ink-4:#4a4f59;
+
+  /* B2B accent system: Cyan → Indigo → Violet */
+  --b2b-1:#22d3ee;
+  --b2b-2:#6366f1;
+  --b2b-3:#a855f7;
+  --b2b-glow:#3b82f6;
+
+  /* Shop accent system: Coral → Pink → Magenta */
+  --shop-1:#ff7a59;
+  --shop-2:#ff4d8d;
+  --shop-3:#e040c2;
+  --shop-glow:#ff6b88;
+
+  /* Active palette — set by JS based on mode */
+  --a1:var(--b2b-1);
+  --a2:var(--b2b-2);
+  --a3:var(--b2b-3);
+  --aglow:var(--b2b-glow);
+
+  --r-sm:6px; --r:10px; --r-lg:18px; --r-xl:28px;
+  --shadow-1:0 1px 0 rgba(255,255,255,.04) inset, 0 1px 2px rgba(0,0,0,.4);
+  --shadow-2:0 30px 80px -30px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.04) inset;
+}
+
+/* ==========================================================
+   RESET / BASE
+   ========================================================== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html,body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{min-height:100vh;overflow-x:hidden;line-height:1.5}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;background:none;border:none;color:inherit;cursor:pointer}
+::selection{background:var(--a2);color:#fff}
+
+/* Ambient background blobs */
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.ambient::before, .ambient::after{
+  content:"";position:absolute;width:60vmax;height:60vmax;border-radius:50%;filter:blur(120px);opacity:.35;
+  transition:background 1s ease, opacity 1s ease, transform 1.5s ease;
+  will-change:transform;
+}
+.ambient::before{background:radial-gradient(circle, var(--a1), transparent 60%);top:-20vmax;left:-15vmax}
+.ambient::after{background:radial-gradient(circle, var(--a3), transparent 60%);bottom:-25vmax;right:-15vmax}
+
+/* Grid overlay */
+.grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:1;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size:48px 48px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 80%);
+}
+
+/* ==========================================================
+   LAYOUT
+   ========================================================== */
+.shell{position:relative;z-index:2}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+@media (max-width:640px){.wrap{padding:0 20px}}
+
+/* ==========================================================
+   HEADER + TOGGLE
+   ========================================================== */
+.header{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  background:rgba(7,8,10,.7);
+  border-bottom:1px solid var(--line);
+}
+.nav{display:flex;align-items:center;gap:24px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.01em;font-size:16px}
+.brand .mark{
+  width:26px;height:26px;border-radius:7px;
+  background:conic-gradient(from 200deg, var(--a1), var(--a2), var(--a3), var(--a1));
+  position:relative;display:grid;place-items:center;
+  box-shadow:0 0 24px -4px var(--aglow);
+  transition:box-shadow .6s ease;
+}
+.brand .mark::after{
+  content:"";width:10px;height:10px;border-radius:3px;background:var(--bg);
+}
+.brand b{font-weight:700}
+.brand i{font-style:normal;color:var(--ink-3);font-weight:400}
+
+.toggle{
+  margin-left:auto;
+  position:relative;
+  display:inline-flex;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:5px;
+  font-size:13px;font-weight:500;
+  isolation:isolate;
+}
+.toggle button{
+  position:relative;z-index:2;
+  padding:8px 18px;border-radius:999px;color:var(--ink-2);
+  display:inline-flex;align-items:center;gap:8px;
+  transition:color .35s ease;
+  white-space:nowrap;
+}
+.toggle button[aria-selected="true"]{color:#0a0b0d;font-weight:600}
+.toggle .pill{
+  position:absolute;z-index:1;top:5px;bottom:5px;
+  border-radius:999px;
+  background:linear-gradient(135deg, var(--a1), var(--a2), var(--a3));
+  box-shadow:0 6px 20px -6px var(--aglow), 0 0 0 1px rgba(255,255,255,.1) inset;
+  transition:left .45s cubic-bezier(.65,.05,.36,1), width .45s cubic-bezier(.65,.05,.36,1), background .6s ease;
+}
+.toggle .icon{width:14px;height:14px;opacity:.85}
+.toggle button[aria-selected="true"] .icon{opacity:1}
+
+.nav-meta{display:flex;align-items:center;gap:18px;color:var(--ink-3);font-size:13px}
+.nav-meta a{transition:color .2s}
+.nav-meta a:hover{color:var(--ink)}
+@media (max-width:860px){
+  .nav-meta{display:none}
+  .nav{gap:16px}
+}
+@media (max-width:520px){
+  .toggle button{padding:8px 14px;font-size:12px}
+  .toggle .icon{display:none}
+  .brand i{display:none}
+}
+
+/* ==========================================================
+   COMMON ATOMS
+   ========================================================== */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-2);
+}
+.dot{
+  width:7px;height:7px;border-radius:50%;background:var(--a1);
+  box-shadow:0 0 0 0 var(--a1);animation:pulse 2.2s ease-out infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 color-mix(in oklab, var(--a1) 60%, transparent)}
+  70%{box-shadow:0 0 0 10px transparent}
+  100%{box-shadow:0 0 0 0 transparent}
+}
+.h1{
+  font-size:clamp(40px, 6.5vw, 84px);
+  line-height:.98;letter-spacing:-.035em;font-weight:700;
+  text-wrap:balance;
+}
+.h1 em{font-style:normal;
+  background:linear-gradient(100deg, var(--a1) 0%, var(--a2) 50%, var(--a3) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.h2{
+  font-size:clamp(28px, 3.4vw, 44px);
+  line-height:1.05;letter-spacing:-.025em;font-weight:600;text-wrap:balance;
+}
+.h3{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.lede{font-size:clamp(15px, 1.3vw, 18px);color:var(--ink-2);max-width:60ch;line-height:1.55}
+.muted{color:var(--ink-3)}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 22px;border-radius:999px;font-weight:600;font-size:14px;
+  transition:transform .15s ease, box-shadow .25s ease, background .25s ease;
+  white-space:nowrap;
+}
+.btn-primary{
+  color:#0a0b0d;
+  background:linear-gradient(135deg, var(--a1), var(--a2));
+  box-shadow:0 12px 30px -10px var(--aglow), inset 0 1px 0 rgba(255,255,255,.4);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 18px 40px -10px var(--aglow), inset 0 1px 0 rgba(255,255,255,.5)}
+.btn-ghost{
+  color:var(--ink);background:rgba(255,255,255,.04);
+  border:1px solid var(--line-2);
+}
+.btn-ghost:hover{background:rgba(255,255,255,.07)}
+.btn .arr{transition:transform .25s ease}
+.btn:hover .arr{transform:translateX(3px)}
+
+.section{padding:120px 0;position:relative}
+.section.tight{padding:80px 0}
+@media (max-width:640px){.section{padding:80px 0}.section.tight{padding:56px 0}}
+
+/* Scroll reveal */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal.delay-1{transition-delay:.08s}
+.reveal.delay-2{transition-delay:.16s}
+.reveal.delay-3{transition-delay:.24s}
+
+/* Mode page transition */
+.page{display:none;opacity:0;transform:translateY(8px);transition:opacity .5s ease, transform .5s ease}
+.page.active{display:block}
+.page.in{opacity:1;transform:none}
+
+/* ==========================================================
+   HERO (B2B)
+   ========================================================== */
+.hero{position:relative;padding:96px 0 80px}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center}
+@media (max-width:980px){.hero-grid{grid-template-columns:1fr;gap:40px}}
+.hero-eyebrow{margin-bottom:28px}
+.hero h1{margin-bottom:24px}
+.hero .lede{margin-bottom:36px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:48px}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;border-top:1px solid var(--line);padding-top:28px;max-width:640px}
+.hero-stats .v{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;letter-spacing:-.02em}
+.hero-stats .v em{font-style:normal;color:var(--a1)}
+.hero-stats .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:6px}
+@media (max-width:640px){.hero-stats{grid-template-columns:repeat(2,1fr);gap:20px}}
+
+/* Hero visual — printer detail */
+.hero-visual{
+  position:relative;aspect-ratio:4/5;border-radius:var(--r-xl);overflow:hidden;
+  background:
+    radial-gradient(ellipse at 30% 30%, color-mix(in oklab, var(--a1) 30%, transparent), transparent 60%),
+    radial-gradient(ellipse at 70% 80%, color-mix(in oklab, var(--a3) 30%, transparent), transparent 60%),
+    linear-gradient(180deg,#0e1118,#06070a);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow-2);
+}
+.printer{position:absolute;inset:0;display:grid;place-items:center}
+.printer svg{width:74%;height:auto;filter:drop-shadow(0 30px 40px rgba(0,0,0,.6))}
+.scanline{
+  position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(90deg, transparent, var(--a1), transparent);
+  opacity:.55;animation:scan 4.5s ease-in-out infinite;
+}
+@keyframes scan{
+  0%{top:18%;opacity:0}
+  10%{opacity:.7}
+  90%{opacity:.7}
+  100%{top:78%;opacity:0}
+}
+.glass-card{
+  position:absolute;left:24px;right:24px;bottom:24px;
+  background:rgba(10,12,16,.65);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--line-2);border-radius:var(--r-lg);
+  padding:16px 18px;display:flex;align-items:center;gap:14px;
+  box-shadow:var(--shadow-2);
+}
+.glass-card .ring{
+  width:34px;height:34px;border-radius:50%;
+  background:conic-gradient(from 0deg, var(--a1), var(--a2), var(--a3), var(--a1));
+  display:grid;place-items:center;flex:none;
+  animation:spin 8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.glass-card .ring::after{content:"";width:24px;height:24px;border-radius:50%;background:var(--bg-2)}
+.glass-card .meta{font-size:12.5px;line-height:1.45}
+.glass-card .meta b{font-weight:600}
+.glass-card .mats{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+.glass-card .mats span{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;
+  padding:2px 7px;border-radius:999px;
+  background:rgba(255,255,255,.06);color:var(--ink-2);
+  border:1px solid var(--line);
+}
+.float-tag{
+  position:absolute;font-family:'JetBrains Mono',monospace;font-size:11px;
+  background:rgba(10,12,16,.7);backdrop-filter:blur(10px);
+  border:1px solid var(--line-2);padding:6px 10px;border-radius:8px;
+  color:var(--ink-2);letter-spacing:.04em;
+}
+.float-tag.t1{top:8%;right:8%;animation:float 6s ease-in-out infinite}
+.float-tag.t2{top:42%;left:-6%;animation:float 7s ease-in-out infinite reverse}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* ==========================================================
+   PROCESS (B2B)
+   ========================================================== */
+.process{position:relative}
+.process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:56px;position:relative}
+@media (max-width:900px){.process-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.process-grid{grid-template-columns:1fr}}
+.process-line{
+  position:absolute;left:0;right:0;top:38px;height:1px;
+  background:linear-gradient(90deg, transparent, var(--a1), var(--a2), var(--a3), transparent);
+  opacity:.5;
+}
+@media (max-width:900px){.process-line{display:none}}
+.step{position:relative}
+.step .num{
+  font-family:'JetBrains Mono',monospace;font-size:13px;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:44px;height:44px;border-radius:50%;
+  background:var(--bg-2);border:1px solid var(--line-2);
+  color:var(--a1);font-weight:600;margin-bottom:20px;
+  position:relative;z-index:1;
+}
+.step h3{margin-bottom:8px;font-size:18px;font-weight:600;letter-spacing:-.01em}
+.step p{font-size:14px;color:var(--ink-2);line-height:1.55}
+
+/* ==========================================================
+   FEATURE CARDS
+   ========================================================== */
+.cards-3, .cards-4, .cards-2{display:grid;gap:20px;margin-top:48px}
+.cards-3{grid-template-columns:repeat(3,1fr)}
+.cards-4{grid-template-columns:repeat(4,1fr)}
+.cards-2{grid-template-columns:repeat(2,1fr)}
+@media (max-width:900px){.cards-3,.cards-4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:540px){.cards-3,.cards-4,.cards-2{grid-template-columns:1fr}}
+
+.card{
+  position:relative;
+  background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.01));
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  padding:28px;
+  overflow:hidden;
+  transition:border-color .3s ease, transform .3s ease;
+}
+.card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background:radial-gradient(400px circle at var(--mx,50%) var(--my,50%), color-mix(in oklab, var(--a1) 18%, transparent), transparent 40%);
+  opacity:0;transition:opacity .3s ease;pointer-events:none;
+}
+.card:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.card:hover::before{opacity:1}
+.card .icon{
+  width:42px;height:42px;border-radius:10px;
+  background:linear-gradient(135deg, color-mix(in oklab, var(--a1) 25%, transparent), color-mix(in oklab, var(--a3) 25%, transparent));
+  border:1px solid var(--line-2);
+  display:grid;place-items:center;margin-bottom:20px;color:var(--ink);
+}
+.card h3{margin-bottom:8px}
+.card p{color:var(--ink-2);font-size:14.5px;line-height:1.55}
+.card .meta{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-3)}
+.card .meta span{padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+
+/* Stat cards */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:48px}
+@media (max-width:900px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+.stat{
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.005));
+  border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;
+}
+.stat .v{font-family:'JetBrains Mono',monospace;font-size:42px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.stat .v em{font-style:normal;color:var(--a1)}
+.stat .l{margin-top:14px;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.stat .desc{margin-top:6px;font-size:13.5px;color:var(--ink-2)}
+
+/* Materials list */
+.materials{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:32px}
+@media (max-width:900px){.materials{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:540px){.materials{grid-template-columns:1fr}}
+.material{
+  border:1px solid var(--line);border-radius:14px;padding:22px;
+  background:rgba(255,255,255,.015);
+  transition:border-color .25s ease;
+  position:relative;overflow:hidden;
+}
+.material:hover{border-color:var(--line-2)}
+.material .name{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--a1);font-weight:600}
+.material h4{margin-top:6px;font-size:18px;font-weight:600;letter-spacing:-.01em}
+.material p{margin-top:10px;font-size:13px;color:var(--ink-2);line-height:1.5}
+
+/* FAQ */
+.faq{margin-top:48px;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line);padding:24px 0}
+.faq summary{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  cursor:pointer;list-style:none;font-size:17px;font-weight:500;letter-spacing:-.01em;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .plus{
+  width:22px;height:22px;border-radius:50%;border:1px solid var(--line-2);
+  display:grid;place-items:center;color:var(--ink-2);transition:transform .25s ease, color .25s ease;
+  flex:none;
+}
+.faq details[open] summary .plus{transform:rotate(45deg);color:var(--a1)}
+.faq .ans{padding:14px 0 4px;color:var(--ink-2);font-size:14.5px;line-height:1.6;max-width:70ch}
+
+/* CTA */
+.cta-block{
+  position:relative;border-radius:var(--r-xl);padding:80px 56px;text-align:center;overflow:hidden;
+  background:linear-gradient(180deg, var(--bg-2), var(--bg-3));
+  border:1px solid var(--line);
+}
+.cta-block::before, .cta-block::after{
+  content:"";position:absolute;width:520px;height:520px;border-radius:50%;filter:blur(100px);opacity:.5;pointer-events:none;
+}
+.cta-block::before{background:var(--a1);top:-200px;left:-100px}
+.cta-block::after{background:var(--a3);bottom:-200px;right:-100px}
+.cta-block .h2{position:relative;margin:0 auto 16px;max-width:18ch}
+.cta-block p{position:relative;max-width:48ch;margin:0 auto 32px;color:var(--ink-2)}
+.cta-block .actions{position:relative;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+@media (max-width:640px){.cta-block{padding:56px 24px}}
+
+/* ==========================================================
+   SHOP-SPECIFIC
+   ========================================================== */
+.kategorie-row{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:48px;
+}
+@media (max-width:900px){.kategorie-row{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:520px){.kategorie-row{grid-template-columns:repeat(2,1fr)}}
+.kat{
+  position:relative;aspect-ratio:1/1.05;border-radius:var(--r-lg);overflow:hidden;
+  border:1px solid var(--line);
+  background:linear-gradient(160deg, color-mix(in oklab, var(--a1) 12%, var(--bg-2)), var(--bg-2));
+  display:flex;flex-direction:column;justify-content:flex-end;padding:18px;
+  transition:transform .3s ease, border-color .3s ease;
+}
+.kat:hover{transform:translateY(-3px);border-color:var(--line-2)}
+.kat .glyph{position:absolute;inset:0;display:grid;place-items:center;font-size:64px;opacity:.85;filter:drop-shadow(0 8px 20px rgba(0,0,0,.4))}
+.kat .name{position:relative;font-weight:600;font-size:15px;letter-spacing:-.01em;z-index:1}
+.kat .count{position:relative;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-3);margin-top:2px;z-index:1}
+
+/* Products */
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+@media (max-width:900px){.products{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:540px){.products{grid-template-columns:1fr}}
+.product{
+  position:relative;border-radius:var(--r-lg);overflow:hidden;
+  background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.005));
+  border:1px solid var(--line);
+  transition:transform .35s cubic-bezier(.2,.7,.2,1), border-color .3s;
+}
+.product:hover{transform:translateY(-4px);border-color:var(--line-2)}
+.product .ph{
+  aspect-ratio:1/1;position:relative;overflow:hidden;
+  background:
+    radial-gradient(ellipse at 30% 30%, color-mix(in oklab, var(--a1) 20%, transparent), transparent 60%),
+    radial-gradient(ellipse at 70% 80%, color-mix(in oklab, var(--a3) 18%, transparent), transparent 60%),
+    linear-gradient(180deg,#0c0e12,#070809);
+  border-bottom:1px solid var(--line);
+}
+.product .ph svg{position:absolute;inset:0;margin:auto;width:60%;height:60%;color:var(--ink);filter:drop-shadow(0 10px 30px rgba(0,0,0,.6))}
+.product .ph .stripes{
+  position:absolute;inset:0;opacity:.06;
+  background:repeating-linear-gradient(45deg, transparent 0 8px, var(--ink) 8px 9px);
+}
+.product .body{padding:18px}
+.product .tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--a1);letter-spacing:.05em;text-transform:uppercase}
+.product h3{margin-top:6px;font-size:16px;font-weight:600;letter-spacing:-.01em}
+.product .meta{margin-top:8px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink-3)}
+.product .meta b{color:var(--ink);font-family:'JetBrains Mono',monospace;font-weight:500}
+
+/* Marquee */
+.marquee{
+  position:relative;overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:rgba(255,255,255,.02);padding:18px 0;
+  mask-image:linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.marquee-track{display:flex;gap:48px;animation:slide 40s linear infinite;width:max-content}
+.marquee span{
+  font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink-2);letter-spacing:.06em;
+  display:inline-flex;align-items:center;gap:48px;
+}
+.marquee span::after{content:"●";color:var(--a1);font-size:8px}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* Social row */
+.social-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+@media (max-width:780px){.social-row{grid-template-columns:1fr}}
+.social{
+  display:flex;align-items:center;gap:14px;padding:20px;border:1px solid var(--line);border-radius:var(--r-lg);
+  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.005));
+  transition:border-color .25s, transform .25s;
+}
+.social:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.social .ico{
+  width:40px;height:40px;border-radius:10px;flex:none;
+  background:linear-gradient(135deg, color-mix(in oklab, var(--a1) 22%, transparent), color-mix(in oklab, var(--a3) 22%, transparent));
+  border:1px solid var(--line-2);display:grid;place-items:center;font-weight:700;font-size:14px;
+}
+.social .name{font-weight:600;font-size:14.5px}
+.social .hand{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-3)}
+
+/* ==========================================================
+   FOOTER
+   ========================================================== */
+.footer{
+  border-top:1px solid var(--line);
+  padding:64px 0 40px;margin-top:80px;
+  background:linear-gradient(180deg, transparent, rgba(0,0,0,.4));
+}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+@media (max-width:780px){.foot-grid{grid-template-columns:repeat(2,1fr);gap:32px}}
+@media (max-width:480px){.foot-grid{grid-template-columns:1fr}}
+.footer h4{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);margin-bottom:14px;font-weight:500}
+.footer ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer li{font-size:14px;color:var(--ink-2)}
+.footer a{transition:color .2s}
+.footer a:hover{color:var(--ink)}
+.foot-bottom{
+  border-top:1px solid var(--line);padding-top:24px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
+  font-size:12px;color:var(--ink-3);font-family:'JetBrains Mono',monospace;
+}
+.foot-legal a{color:var(--ink-2);transition:color .2s}
+.foot-legal a:hover{color:var(--ink)}
+.legal-section{padding:0 0 60px}
+.legal-section .wrap{max-width:880px}
+.legal-section details{
+  border:1px solid var(--line);border-radius:var(--r);
+  padding:18px 22px;background:rgba(255,255,255,.02);margin-bottom:14px;
+}
+.legal-section details[open]{border-color:var(--line-2)}
+.legal-section summary{
+  cursor:pointer;list-style:none;font-size:14px;font-weight:500;color:var(--ink);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.legal-section summary::-webkit-details-marker{display:none}
+.legal-section summary .plus{color:var(--ink-3);font-family:'JetBrains Mono',monospace}
+.legal-section .ans{
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--line);
+  font-size:13.5px;line-height:1.65;color:var(--ink-2);
+}
+.legal-section .ans p{margin-bottom:8px}
+.legal-section .ans p:last-child{margin-bottom:0}
+
+/* ==========================================================
+   ICONS
+   ========================================================== */
+.i{width:1em;height:1em;flex:none}
+</style>
+</head>
+<body>
+
+<div class="ambient" aria-hidden="true"></div>
+<div class="grid-overlay" aria-hidden="true"></div>
+
+<div class="shell">
+
+  <!-- =========================================================
+       HEADER
+       ========================================================= -->
+  <header class="header">
+    <div class="wrap nav">
+      <a href="#b2b" class="brand" aria-label="SkyCommerce home">
+        <span class="mark" aria-hidden="true"></span>
+        <span><b>Sky</b><i>Commerce</i></span>
+      </a>
+
+      <div class="toggle" role="tablist" aria-label="Bereich wählen">
+        <span class="pill" id="togglePill" aria-hidden="true"></span>
+        <button id="tab-b2b" role="tab" aria-selected="true" aria-controls="page-b2b">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>
+          Geschäftskunden
+        </button>
+        <button id="tab-shop" role="tab" aria-selected="false" aria-controls="page-shop">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 7v13a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7l-3-5H6zM3 7h18M16 11a4 4 0 0 1-8 0"/></svg>
+          3D-Druck Shop
+        </button>
+      </div>
+
+      <div class="nav-meta">
+        <a href="mailto:info@sky-commerce.net">info@sky-commerce.net</a>
+        <span style="color:var(--ink-4)">·</span>
+        <span>Dorsten · NRW</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       PAGE: B2B
+       ========================================================= -->
+  <main id="page-b2b" class="page active in" role="tabpanel" aria-labelledby="tab-b2b">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow hero-eyebrow reveal"><span class="dot"></span>3D-Druck-Service · Dorsten/NRW</div>
+          <h1 class="h1 reveal delay-1">3D-Druck mit <em>kurzen Drähten</em> — vom Prototyp bis zur Kleinserie.</h1>
+          <p class="lede reveal delay-2">SkyCommerce UG ist eine kleine Werkstatt aus Dorsten. Wir drucken für Privatleute, Selbstständige und kleinere Betriebe — von Einzelteilen bis zu Kleinserien. Zwei Köpfe, ehrliche Kalkulation, feste Ansprechpartner. Pilotaufträge willkommen.</p>
+          <div class="hero-actions reveal delay-3">
+            <a class="btn btn-primary" href="mailto:info@sky-commerce.net?subject=Anfrage%203D-Druck%20Service">
+              Anfrage starten
+              <svg class="i arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="#leistungen">Leistungen ansehen</a>
+          </div>
+          <div class="hero-stats reveal delay-3">
+            <div><div class="v">FDM</div><div class="l">Verfahren</div></div>
+            <div><div class="v"><em>1–3</em>Tage</div><div class="l">Versand · NRW</div></div>
+            <div><div class="v">Festpreis</div><div class="l">vorab, transparent</div></div>
+            <div><div class="v"><em>3</em>Materialien</div><div class="l">PLA · PETG · ABS</div></div>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal delay-2" id="heroVisual">
+          <div class="float-tag t1">// G-CODE OK</div>
+          <div class="float-tag t2">// LAYER 248 / 612</div>
+          <div class="printer">
+            <!-- Printer-ish geometric SVG (placeholder, original) -->
+            <svg viewBox="0 0 400 500" fill="none" stroke="currentColor" stroke-width="1.5" style="color:#cdd2d8">
+              <!-- Frame -->
+              <rect x="60" y="60" width="280" height="380" rx="6" stroke="#2a2f38"/>
+              <rect x="60" y="60" width="280" height="380" rx="6" stroke="url(#gx)" stroke-opacity=".5"/>
+              <!-- Bed -->
+              <rect x="90" y="360" width="220" height="14" rx="2" fill="#1a1d23" stroke="#3a4150"/>
+              <line x1="90" y1="368" x2="310" y2="368" stroke="url(#gx)" stroke-width="1" stroke-opacity=".6"/>
+              <!-- X gantry -->
+              <line x1="60" y1="200" x2="340" y2="200" stroke="#3a4150" stroke-width="3"/>
+              <!-- Printhead -->
+              <g>
+                <rect x="180" y="180" width="60" height="44" rx="4" fill="#15181f" stroke="#4a5060"/>
+                <rect x="195" y="220" width="30" height="22" rx="2" fill="#0c0e12" stroke="#4a5060"/>
+                <line x1="210" y1="242" x2="210" y2="320" stroke="url(#gx)" stroke-width="1.5"/>
+                <circle cx="210" cy="324" r="3" fill="url(#gx)"/>
+              </g>
+              <!-- Object on bed -->
+              <g transform="translate(190 320)">
+                <path d="M-25 40 L-25 0 L-15 -10 L15 -10 L25 0 L25 40 Z" fill="#0e1118" stroke="url(#gx)" stroke-opacity=".8"/>
+                <path d="M-25 0 L-15 -10 L15 -10 L25 0" fill="#161a22" stroke="url(#gx)" stroke-opacity=".5"/>
+                <line x1="-25" y1="10" x2="25" y2="10" stroke="#2a2f38"/>
+                <line x1="-25" y1="22" x2="25" y2="22" stroke="#2a2f38"/>
+                <line x1="-25" y1="34" x2="25" y2="34" stroke="#2a2f38"/>
+              </g>
+              <!-- Spool -->
+              <g transform="translate(110 110)">
+                <circle r="22" fill="#0e1118" stroke="#3a4150"/>
+                <circle r="14" fill="none" stroke="url(#gx)" stroke-opacity=".7"/>
+                <circle r="4" fill="url(#gx)"/>
+              </g>
+              <!-- Display -->
+              <rect x="240" y="90" width="80" height="46" rx="4" fill="#0a0c10" stroke="#3a4150"/>
+              <line x1="252" y1="106" x2="308" y2="106" stroke="url(#gx)" stroke-opacity=".8"/>
+              <line x1="252" y1="116" x2="290" y2="116" stroke="#4a5060"/>
+              <line x1="252" y1="124" x2="298" y2="124" stroke="#4a5060"/>
+              <defs>
+                <linearGradient id="gx" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="var(--a1)"/>
+                  <stop offset="50%" stop-color="var(--a2)"/>
+                  <stop offset="100%" stop-color="var(--a3)"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="scanline"></div>
+          <div class="glass-card">
+            <div class="ring"></div>
+            <div class="meta">
+              <b>Live in Produktion</b>
+              <div class="mats">
+                <span>PLA</span><span>PETG</span><span>ABS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>PROTOTYPEN</span><span>EINZELTEILE</span><span>KLEINSERIEN</span><span>MATERIALBERATUNG</span><span>NDA MÖGLICH</span><span>MADE IN NRW</span><span>KOSTENLOSE BERATUNG</span>
+        <span>PROTOTYPEN</span><span>EINZELTEILE</span><span>KLEINSERIEN</span><span>MATERIALBERATUNG</span><span>NDA MÖGLICH</span><span>MADE IN NRW</span><span>KOSTENLOSE BERATUNG</span>
+      </div>
+    </div>
+
+    <!-- LEISTUNGEN -->
+    <section class="section" id="leistungen">
+      <div class="wrap">
+        <div class="reveal eyebrow"><span class="dot"></span>Leistungen · 04</div>
+        <h2 class="h2 reveal" style="margin-top:18px;max-width:22ch">Vier Bereiche. <em style="font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent">Ein Ansprechpartner.</em></h2>
+
+        <div class="cards-4">
+          <div class="card reveal" data-tilt>
+            <div class="icon"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66 4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66 4.24-4.24"/></svg></div>
+            <h3 class="h3">Prototypen</h3>
+            <p>Schnelle Iteration für Bastelprojekte, Konstruktions­ideen und Designvalidierung. STL oder STEP rein — gedrucktes Teil raus.</p>
+            <div class="meta"><span>FDM</span><span>STL/STEP</span></div>
+          </div>
+          <div class="card reveal delay-1" data-tilt>
+            <div class="icon"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9"/></svg></div>
+            <h3 class="h3">Einzelteile</h3>
+            <p>Ersatzteile, Custom-Halterungen, Geschenke. Auch wenn nur ein einziges Teil nötig ist — wir drucken auch Stückzahl 1.</p>
+            <div class="meta"><span>ab 1 Stk</span><span>Festpreis</span></div>
+          </div>
+          <div class="card reveal delay-2" data-tilt>
+            <div class="icon"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+            <h3 class="h3">Kleinserien</h3>
+            <p>Mehrere Drucker im Einsatz — Kleinserien bis ca. 100 Stück sind unser Sweet-Spot. Größere Mengen sprechen wir vorher gemeinsam durch.</p>
+            <div class="meta"><span>bis ~100 Stk</span><span>Mengenrabatt</span></div>
+          </div>
+          <div class="card reveal delay-3" data-tilt>
+            <div class="icon"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <h3 class="h3">Materialberatung</h3>
+            <p>Welches Material passt zu Last, Temperatur, UV oder Optik? Wir beraten ehrlich — auch wenn FDM nicht die richtige Wahl ist.</p>
+            <div class="meta"><span>kostenlos</span><span>30 Min</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section class="section tight process">
+      <div class="wrap">
+        <div class="reveal eyebrow"><span class="dot"></span>Ablauf · 04 Schritte</div>
+        <h2 class="h2 reveal" style="margin-top:18px;max-width:24ch">Von der Anfrage bis zum Versand — <em style="font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent">ohne Umwege.</em></h2>
+
+        <div class="process-grid">
+          <div class="process-line" aria-hidden="true"></div>
+          <div class="step reveal"><div class="num">01</div><h3>Anfrage & Daten</h3><p>STL, STEP oder Skizze. Wir reden direkt mit den Konstrukteuren — keine Ticketnummer dazwischen.</p></div>
+          <div class="step reveal delay-1"><div class="num">02</div><h3>Machbarkeitscheck</h3><p>Prüfung auf Druckbarkeit, Wandstärken, Orientierung. Optimierungs­vorschläge inklusive.</p></div>
+          <div class="step reveal delay-2"><div class="num">03</div><h3>Angebot & Start</h3><p>Festpreis, klarer Liefertermin, transparenter Materialeinsatz. Freigabe per Mail genügt.</p></div>
+          <div class="step reveal delay-3"><div class="num">04</div><h3>QS & Versand</h3><p>Sichtprüfung, Maßprüfung bei Bedarf, sicherer Versand aus Dorsten. NDA jederzeit möglich.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MATERIALIEN -->
+    <section class="section tight" id="materialien">
+      <div class="wrap">
+        <div class="reveal eyebrow"><span class="dot"></span>Materialien · Standard</div>
+        <h2 class="h2 reveal" style="margin-top:18px;max-width:24ch">Drei Werkstoffe, die <em style="font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent">die meisten Alltags-Anwendungen</em> abdecken.</h2>
+
+        <div class="materials">
+          <div class="material reveal"><div class="name">// PLA</div><h4>Optik & Visuals</h4><p>Maßstabsmodelle, Designstudien, Deko. Feines Druckbild, viele Farben — unser Standard für Designteile.</p></div>
+          <div class="material reveal delay-1"><div class="name">// PETG</div><h4>Mechanik & Outdoor</h4><p>Zäh, chemikalien­beständig, witterungs­geeignet. Unsere Empfehlung für Funktionsteile mit Belastung.</p></div>
+          <div class="material reveal delay-2"><div class="name">// ABS</div><h4>Wärme & Stabilität</h4><p>Temperatur­beständig, schlagzäh, gut nachzubearbeiten und zu kleben — wenn's mal robuster sein muss.</p></div>
+        </div>
+        <p class="muted reveal" style="margin-top:24px;font-size:13.5px">Andere Materialien (z. B. TPU, ASA, Nylon, Carbon-verstärkt) auf Anfrage — meist innerhalb weniger Tage beschaffbar.</p>
+      </div>
+    </section>
+
+    <!-- VERTRAUEN / STATS -->
+    <section class="section tight">
+      <div class="wrap">
+        <div class="reveal eyebrow"><span class="dot"></span>Warum SkyCommerce</div>
+        <h2 class="h2 reveal" style="margin-top:18px;max-width:22ch">Klein genug für direkte Drähte. <em style="font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent">Genug erfahren für ernste Aufträge.</em></h2>
+
+        <div class="stat-grid">
+          <div class="stat reveal"><div class="v"><em>2</em></div><div class="l">Geschäftsführer</div><div class="desc">Felix & Niklas — die, die auch drucken.</div></div>
+          <div class="stat reveal delay-1"><div class="v">FDM</div><div class="l">Verfahren</div><div class="desc">Mehrere Drucker für parallele Aufträge.</div></div>
+          <div class="stat reveal delay-2"><div class="v"><em>1–3</em></div><div class="l">Werktage Versand</div><div class="desc">ab Freigabe, je nach Auftrag.</div></div>
+          <div class="stat reveal delay-3"><div class="v">2023</div><div class="l">gegründet · NRW</div><div class="desc">UG, eingetragen, Sitz Dorsten.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section tight">
+      <div class="wrap" style="max-width:880px">
+        <div class="reveal eyebrow"><span class="dot"></span>FAQ</div>
+        <h2 class="h2 reveal" style="margin-top:18px">Häufige Fragen.</h2>
+        <div class="faq reveal">
+          <details>
+            <summary>Welche Toleranzen sind realistisch? <span class="plus">+</span></summary>
+            <div class="ans">FDM hat seine Eigenheiten — bei sauberer Konstruktion sind ungefähr ±0,2–0,3 mm üblich, je nach Bauteil und Material. Wir schauen uns deine Datei vorher an und sagen dir ehrlich, was geht und was nicht.</div>
+          </details>
+          <details>
+            <summary>Wie schnell kann geliefert werden? <span class="plus">+</span></summary>
+            <div class="ans">Bei Einzelteilen oder Prototypen typischerweise wenige Werktage ab Freigabe. Bei Kleinserien sprechen wir den Liefertermin gemeinsam ab — wir geben einen festen Termin raus, an den wir uns dann auch halten.</div>
+          </details>
+          <details>
+            <summary>Welche Materialien sind verfügbar? <span class="plus">+</span></summary>
+            <div class="ans">Standard: PLA, PETG und ABS. Andere Werkstoffe (z. B. TPU, ASA, Nylon, Carbon-verstärkt) auf Anfrage — meist innerhalb weniger Tage beschaffbar, je nach Verfügbarkeit beim Lieferanten.</div>
+          </details>
+          <details>
+            <summary>Macht ihr Slicing & Konstruktion oder nur Druck? <span class="plus">+</span></summary>
+            <div class="ans">Slicing übernehmen wir komplett (Layerhöhe, Infill, Stützen, Orientierung). Konstruktive Anpassungen am STL-/STEP-File sind in kleinem Rahmen kostenlos, größere Designarbeit kalkulieren wir transparent.</div>
+          </details>
+          <details>
+            <summary>Wie ist das mit NDAs und Vertraulichkeit? <span class="plus">+</span></summary>
+            <div class="ans">Standardmäßig behandeln wir alle Auftragsdaten vertraulich. Wenn du eine NDA brauchst, schick sie mit — wir unterzeichnen vor der ersten Datenübergabe oder stellen dir eine kurze, faire Vorlage.</div>
+          </details>
+          <details>
+            <summary>Was kostet ein Teil? <span class="plus">+</span></summary>
+            <div class="ans">Hängt stark von Volumen, Material und Stückzahl ab. Du bekommst immer einen Festpreis vorab — kein „ab X €“-Marketing, sondern eine konkrete Zahl für dein konkretes Teil. Keine versteckten Kosten.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA B2B -->
+    <section class="section tight">
+      <div class="wrap">
+        <div class="cta-block reveal">
+          <div class="eyebrow" style="justify-content:center;margin-bottom:16px"><span class="dot"></span>Lass uns reden</div>
+          <h2 class="h2">Schick uns dein Bauteil. <em style="font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent">Wir melden uns zeitnah zurück.</em></h2>
+          <p>STL, STEP oder Skizze reicht — auch eine grobe Idee zum Sparring genügt. Beratung ist kostenlos, und du redest direkt mit Felix oder Niklas. Kein Sales-Team, keine Tickets.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="mailto:info@sky-commerce.net?subject=Anfrage%203D-Druck%20Service">
+              Anfrage starten
+              <svg class="i arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="tel:+491628692042">+49 162 8692042</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       PAGE: SHOP
+       ========================================================= -->
+  <main id="page-shop" class="page" role="tabpanel" aria-labelledby="tab-shop" hidden>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow hero-eyebrow reveal"><span class="dot"></span>PrintrixStudio · Designs aus Dorsten</div>
+          <h1 class="h1 reveal delay-1">Designs, die <em>Charakter</em> in deinen Alltag bringen.</h1>
+          <p class="lede reveal delay-2">Hochzeit, Weihnachten, Küche, Deko, Hobby — 3D-gedruckt und verschickt aus Dorsten. Klein gemacht, groß gemeint.</p>
+          <div class="hero-actions reveal delay-3">
+            <a class="btn btn-primary" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener">
+              Jetzt zu Etsy
+              <svg class="i arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="#kategorien">Kategorien ansehen</a>
+          </div>
+          <div class="hero-stats reveal delay-3">
+            <div><div class="v"><em>230</em>+</div><div class="l">Verkäufe</div></div>
+            <div><div class="v"><em>4.5</em>★</div><div class="l">Bewertung</div></div>
+            <div><div class="v"><em>50</em>+</div><div class="l">Designs</div></div>
+            <div><div class="v"><em>1–3</em></div><div class="l">Tage Versand</div></div>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal delay-2">
+          <div class="float-tag t1">// HANDMADE · DORSTEN</div>
+          <div class="float-tag t2">// ETSY ★★★★½</div>
+          <div class="printer">
+            <!-- Vase — geometric, original -->
+            <svg viewBox="0 0 400 500" fill="none" stroke="currentColor" stroke-width="1.5" style="color:#cdd2d8">
+              <defs>
+                <linearGradient id="vg" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="var(--a1)"/>
+                  <stop offset="50%" stop-color="var(--a2)"/>
+                  <stop offset="100%" stop-color="var(--a3)"/>
+                </linearGradient>
+              </defs>
+              <!-- Surface -->
+              <line x1="60" y1="420" x2="340" y2="420" stroke="#3a4150"/>
+              <!-- Vase body -->
+              <path d="M150 120 Q150 100 170 100 H230 Q250 100 250 120 V160 Q280 200 280 260 Q280 360 240 410 H160 Q120 360 120 260 Q120 200 150 160 Z"
+                    fill="#0e1118" stroke="url(#vg)" stroke-width="1.5"/>
+              <!-- Layer lines (signature 3D-print look) -->
+              <g stroke="#1f242c" stroke-width="1">
+                <path d="M125 200 Q200 215 275 200"/>
+                <path d="M122 230 Q200 248 278 230"/>
+                <path d="M120 260 Q200 282 280 260"/>
+                <path d="M120 290 Q200 312 280 290"/>
+                <path d="M122 320 Q200 340 278 320"/>
+                <path d="M126 350 Q200 368 274 350"/>
+                <path d="M134 380 Q200 396 266 380"/>
+              </g>
+              <!-- Mouth -->
+              <ellipse cx="200" cy="100" rx="30" ry="6" fill="#06070a" stroke="url(#vg)"/>
+              <!-- Stem inside -->
+              <path d="M200 100 Q198 70 205 50 Q210 40 215 35" stroke="url(#vg)" stroke-width="1.5"/>
+              <circle cx="215" cy="33" r="6" fill="url(#vg)" opacity=".6"/>
+              <!-- Reflection highlight -->
+              <path d="M165 160 Q160 220 165 320" stroke="url(#vg)" stroke-opacity=".35"/>
+            </svg>
+          </div>
+          <div class="scanline"></div>
+          <div class="glass-card">
+            <div class="ring"></div>
+            <div class="meta">
+              <b>Live im Etsy-Shop</b>
+              <div class="mats">
+                <span>HOCHZEIT</span><span>KÜCHE</span><span>DEKO</span><span>SAISON</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>230+ VERKÄUFE</span><span>4.5★ AUF ETSY</span><span>50+ DESIGNS</span><span>SEIT 2025 AUF ETSY</span><span>VERSAND 1–3 WERKTAGE</span><span>HANDMADE IN DORSTEN</span>
+        <span>230+ VERKÄUFE</span><span>4.5★ AUF ETSY</span><span>50+ DESIGNS</span><span>SEIT 2025 AUF ETSY</span><span>VERSAND 1–3 WERKTAGE</span><span>HANDMADE IN DORSTEN</span>
+      </div>
+    </div>
+
+    <!-- KATEGORIEN -->
+    <section class="section" id="kategorien">
+      <div class="wrap">
+        <div class="reveal eyebrow"><span class="dot"></span>Kategorien · 05</div>
+        <h2 class="h2 reveal" style="margin-top:18px;max-width:24ch">Für jeden Anlass <em style="font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent">ein eigener Charakter.</em></h2>
+
+        <div class="kategorie-row">
+          <a class="kat reveal" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="glyph">♡</div>
+            <div class="name">Hochzeit</div>
+            <div class="count">// 13 Designs</div>
+          </a>
+          <a class="kat reveal delay-1" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="glyph">❄</div>
+            <div class="name">Weihnachten</div>
+            <div class="count">// 9 Designs</div>
+          </a>
+          <a class="kat reveal delay-2" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="glyph">✿</div>
+            <div class="name">Ostern</div>
+            <div class="count">// 4 Designs</div>
+          </a>
+          <a class="kat reveal delay-3" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="glyph">◷</div>
+            <div class="name">Küche</div>
+            <div class="count">// 5 Designs</div>
+          </a>
+          <a class="kat reveal delay-3" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="glyph">⚒</div>
+            <div class="name">Hobby & DIY</div>
+            <div class="count">// 4 Designs</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- BESTSELLERS -->
+    <section class="section tight">
+      <div class="wrap">
+        <div class="reveal eyebrow"><span class="dot"></span>Beliebt · Auswahl</div>
+        <h2 class="h2 reveal" style="margin-top:18px;max-width:24ch">Eine kleine Vorschau — <em style="font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent">der Rest wartet auf Etsy.</em></h2>
+
+        <div class="products">
+          <a class="product reveal" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="ph">
+              <div class="stripes"></div>
+              <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><rect x="20" y="20" width="60" height="60" rx="4"/><text x="50" y="58" text-anchor="middle" font-family="JetBrains Mono" font-size="22" fill="currentColor" stroke="none">07</text></svg>
+            </div>
+            <div class="body">
+              <div class="tag">Hochzeit</div>
+              <h3>Tischnummern Hochzeit</h3>
+              <div class="meta"><span>Sets · 1–20</span><b>ab 17,99 €</b></div>
+            </div>
+          </a>
+
+          <a class="product reveal delay-1" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="ph">
+              <div class="stripes"></div>
+              <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><path d="M40 20 Q40 14 50 14 Q60 14 60 20 V35 Q72 50 72 65 Q72 84 50 84 Q28 84 28 65 Q28 50 40 35 Z"/></svg>
+            </div>
+            <div class="body">
+              <div class="tag">Deko</div>
+              <h3>Moderne Vase</h3>
+              <div class="meta"><span>Skandinavisch</span><b>ab 24,99 €</b></div>
+            </div>
+          </a>
+
+          <a class="product reveal delay-2" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="ph">
+              <div class="stripes"></div>
+              <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><circle cx="50" cy="55" r="22"/><path d="M30 55 Q30 38 50 38 Q70 38 70 55"/><path d="M40 30 Q42 22 50 22 Q58 22 60 30"/></svg>
+            </div>
+            <div class="body">
+              <div class="tag">Deko</div>
+              <h3>Teelichthalter</h3>
+              <div class="meta"><span>3er Set</span><b>ab 14,99 €</b></div>
+            </div>
+          </a>
+
+          <a class="product reveal" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="ph">
+              <div class="stripes"></div>
+              <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="50" cy="42" rx="18" ry="22"/><path d="M40 60 Q40 78 50 84 Q60 78 60 60"/></svg>
+            </div>
+            <div class="body">
+              <div class="tag">Frühstück</div>
+              <h3>Eierbecher</h3>
+              <div class="meta"><span>4er Set</span><b>ab 17,99 €</b></div>
+            </div>
+          </a>
+
+          <a class="product reveal delay-1" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="ph">
+              <div class="stripes"></div>
+              <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><rect x="22" y="40" width="56" height="20" rx="4"/><path d="M30 40 V32 Q30 26 36 26 H64 Q70 26 70 32 V40"/><line x1="42" y1="50" x2="58" y2="50"/></svg>
+            </div>
+            <div class="body">
+              <div class="tag">Alltag</div>
+              <h3>Paketöffner</h3>
+              <div class="meta"><span>Schlüsselanhänger</span><b>ab 7,99 €</b></div>
+            </div>
+          </a>
+
+          <a class="product reveal delay-2" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener" data-tilt>
+            <div class="ph">
+              <div class="stripes"></div>
+              <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="50" cy="62" rx="28" ry="14"/><path d="M22 62 V40 Q50 50 78 40 V62"/><line x1="34" y1="48" x2="34" y2="62"/><line x1="50" y1="50" x2="50" y2="64"/><line x1="66" y1="48" x2="66" y2="62"/></svg>
+            </div>
+            <div class="body">
+              <div class="tag">Küche</div>
+              <h3>Gemüsewaschschale</h3>
+              <div class="meta"><span>mit Sieb</span><b>ab 17,99 €</b></div>
+            </div>
+          </a>
+        </div>
+
+        <div style="margin-top:36px;text-align:center" class="reveal">
+          <a class="btn btn-primary" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener">
+            Alle 50+ Designs auf Etsy
+            <svg class="i arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="section tight">
+      <div class="wrap">
+        <div class="reveal eyebrow"><span class="dot"></span>Vertrauen · Etsy</div>
+        <h2 class="h2 reveal" style="margin-top:18px;max-width:22ch">Klein, ehrlich, <em style="font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent">und mit jedem Paket ein Stück Dorstener Werkstatt.</em></h2>
+        <div class="stat-grid">
+          <div class="stat reveal"><div class="v"><em>230</em>+</div><div class="l">Verkäufe</div><div class="desc">und es werden täglich mehr.</div></div>
+          <div class="stat reveal delay-1"><div class="v"><em>4.5</em>★</div><div class="l">Etsy-Bewertung</div><div class="desc">aus echten Kundenstimmen.</div></div>
+          <div class="stat reveal delay-2"><div class="v"><em>50</em>+</div><div class="l">Designs</div><div class="desc">über 6 Kategorien hinweg.</div></div>
+          <div class="stat reveal delay-3"><div class="v"><em>1–3</em></div><div class="l">Werktage</div><div class="desc">Versand aus Dorsten.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOCIAL -->
+    <section class="section tight">
+      <div class="wrap">
+        <div class="reveal eyebrow"><span class="dot"></span>Mehr Designs</div>
+        <h2 class="h2 reveal" style="margin-top:18px;max-width:24ch">Folg uns durchs <em style="font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent">Werkstatt-Universum.</em></h2>
+
+        <div class="social-row">
+          <a class="social reveal" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener">
+            <div class="ico">E</div>
+            <div><div class="name">Etsy · PrintrixStudio</div><div class="hand">etsy.com/shop/PrintrixStudio</div></div>
+          </a>
+          <a class="social reveal delay-1" href="https://de.pinterest.com/printrixstudio" target="_blank" rel="noopener">
+            <div class="ico">P</div>
+            <div><div class="name">Pinterest · Inspiration</div><div class="hand">pinterest.com/printrixstudio</div></div>
+          </a>
+          <a class="social reveal delay-2" href="https://makerworld.com/de/@skycom_3d/collections" target="_blank" rel="noopener">
+            <div class="ico">M</div>
+            <div><div class="name">MakerWorld · STL-Files</div><div class="hand">@skycom_3d</div></div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA SHOP -->
+    <section class="section tight">
+      <div class="wrap">
+        <div class="cta-block reveal">
+          <div class="eyebrow" style="justify-content:center;margin-bottom:16px"><span class="dot"></span>Bereit für etwas Charakter?</div>
+          <h2 class="h2">Stöber durch <em style="font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent">50+ Designs</em> auf Etsy.</h2>
+          <p>Hochzeitstische, Weihnachtsdeko, Küchenhelfer — alle Bestellungen werden in Dorsten verpackt und gehen in 1–3 Werktagen raus.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener">
+              Jetzt zu Etsy
+              <svg class="i arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="https://de.pinterest.com/printrixstudio" target="_blank" rel="noopener">Auf Pinterest folgen</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       LEGAL (Impressum / Datenschutz Stubs)
+       ========================================================= -->
+  <section class="legal-section" aria-label="Rechtliche Hinweise">
+    <div class="wrap">
+      <details id="impressum">
+        <summary>Impressum <span class="plus">+</span></summary>
+        <div class="ans">
+          <p><b>SkyCommerce UG (haftungsbeschränkt)</b><br/>
+          Dorsten, Nordrhein-Westfalen<br/>
+          Deutschland</p>
+          <p>Geschäftsführer: Felix Gertdenken, Niklas Kiy</p>
+          <p>Kontakt: <a href="mailto:info@sky-commerce.net">info@sky-commerce.net</a> · <a href="tel:+491628692042">+49 162 8692042</a></p>
+          <p style="color:var(--ink-3);font-size:12px;margin-top:14px">// Vollständige Impressums­angaben (Handelsregister­nummer, USt-IdNr., Verantwortliche nach §&nbsp;18 MStV) folgen hier.</p>
+        </div>
+      </details>
+      <details id="datenschutz">
+        <summary>Datenschutz <span class="plus">+</span></summary>
+        <div class="ans">
+          <p>Diese Website setzt keine Tracking-Cookies und verwendet kein Analyse-Tool. Es werden keine personen­bezogenen Daten erhoben, außer du nimmst aktiv per E-Mail oder Telefon Kontakt auf.</p>
+          <p>Wenn du uns per E-Mail kontaktierst, speichern wir deine Anfrage und die zugehörigen Kontaktdaten ausschließlich zur Bearbeitung — und löschen sie, sobald sie nicht mehr benötigt werden.</p>
+          <p style="color:var(--ink-3);font-size:12px;margin-top:14px">// Eine vollständige Datenschutz­erklärung nach DSGVO (Verantwortliche, Speicherfristen, Betroffenenrechte, Beschwerderecht) folgt hier.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <div class="brand" style="margin-bottom:16px">
+            <span class="mark" aria-hidden="true"></span>
+            <span><b>Sky</b><i>Commerce</i></span>
+          </div>
+          <p style="font-size:14px;color:var(--ink-2);max-width:36ch;line-height:1.55">3D-Druck aus NRW. Endkunden auf Etsy als <b style="color:var(--ink)">PrintrixStudio</b>, B2B direkt mit Felix & Niklas. Gegründet 2023.</p>
+        </div>
+        <div>
+          <h4>Kontakt</h4>
+          <ul>
+            <li><a href="mailto:info@sky-commerce.net">info@sky-commerce.net</a></li>
+            <li><a href="tel:+491628692042">+49 162 8692042</a></li>
+            <li>Dorsten · NRW</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Geschäftskunden</h4>
+          <ul>
+            <li><a href="#leistungen" data-go="b2b">Leistungen</a></li>
+            <li><a href="#materialien" data-go="b2b">Materialien</a></li>
+            <li><a href="mailto:info@sky-commerce.net?subject=Anfrage%203D-Druck%20Service">Anfrage starten</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="https://www.etsy.com/shop/PrintrixStudio" target="_blank" rel="noopener">Etsy</a></li>
+            <li><a href="https://de.pinterest.com/printrixstudio" target="_blank" rel="noopener">Pinterest</a></li>
+            <li><a href="https://makerworld.com/de/@skycom_3d/collections" target="_blank" rel="noopener">MakerWorld</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 SkyCommerce UG · Felix Gertdenken & Niklas Kiy</span>
+        <span class="foot-legal">
+          <a href="#impressum">Impressum</a>
+          <span style="color:var(--ink-4);margin:0 8px">·</span>
+          <a href="#datenschutz">Datenschutz</a>
+        </span>
+        <span>// MADE IN NRW</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+/* ==========================================================
+   TAB TOGGLE
+   ========================================================== */
+const tabs = {
+  b2b: document.getElementById('tab-b2b'),
+  shop: document.getElementById('tab-shop'),
+};
+const pages = {
+  b2b: document.getElementById('page-b2b'),
+  shop: document.getElementById('page-shop'),
+};
+const pill = document.getElementById('togglePill');
+const root = document.documentElement;
+
+const palettes = {
+  b2b:  {a1:'#22d3ee', a2:'#6366f1', a3:'#a855f7', glow:'#3b82f6'},
+  shop: {a1:'#ff7a59', a2:'#ff4d8d', a3:'#e040c2', glow:'#ff6b88'},
+};
+
+function applyPalette(mode){
+  const p = palettes[mode];
+  root.style.setProperty('--a1', p.a1);
+  root.style.setProperty('--a2', p.a2);
+  root.style.setProperty('--a3', p.a3);
+  root.style.setProperty('--aglow', p.glow);
+}
+
+function movePill(mode){
+  const btn = tabs[mode];
+  const tRect = btn.parentElement.getBoundingClientRect();
+  const bRect = btn.getBoundingClientRect();
+  pill.style.left = (bRect.left - tRect.left) + 'px';
+  pill.style.width = bRect.width + 'px';
+}
+
+function setMode(mode, opts = {}){
+  const other = mode === 'b2b' ? 'shop' : 'b2b';
+
+  tabs[mode].setAttribute('aria-selected','true');
+  tabs[other].setAttribute('aria-selected','false');
+
+  // crossfade
+  const showPage = pages[mode], hidePage = pages[other];
+  hidePage.classList.remove('in');
+  setTimeout(()=>{
+    hidePage.classList.remove('active');
+    hidePage.setAttribute('hidden','');
+    showPage.removeAttribute('hidden');
+    showPage.classList.add('active');
+    requestAnimationFrame(()=> showPage.classList.add('in'));
+    // re-trigger reveals inside the now-visible page
+    queueMicrotask(()=> {
+      showPage.querySelectorAll('.reveal').forEach(el=>{
+        el.classList.remove('in');
+      });
+      observeReveals(showPage);
+    });
+    // scroll to top of viewport on mode switch (smooth)
+    if (!opts.silent){
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+  }, 220);
+
+  applyPalette(mode);
+  movePill(mode);
+
+  // update hash without jumping
+  const hash = '#' + mode;
+  if (location.hash !== hash){
+    history.replaceState(null, '', hash);
+  }
+}
+
+tabs.b2b.addEventListener('click', ()=> setMode('b2b'));
+tabs.shop.addEventListener('click', ()=> setMode('shop'));
+
+// Keyboard arrows on toggle
+[tabs.b2b, tabs.shop].forEach(btn=>{
+  btn.addEventListener('keydown', e=>{
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
+      e.preventDefault();
+      const next = btn === tabs.b2b ? 'shop' : 'b2b';
+      const prev = btn === tabs.b2b ? 'shop' : 'b2b';
+      const target = e.key === 'ArrowRight' ? next : prev;
+      setMode(target);
+      tabs[target].focus();
+    }
+  });
+});
+
+// Footer cross-links
+document.querySelectorAll('[data-go]').forEach(a=>{
+  a.addEventListener('click', ()=> {
+    const m = a.getAttribute('data-go');
+    if (m && tabs[m]) setMode(m);
+  });
+});
+
+// Init from hash
+function initFromHash(){
+  const m = location.hash.replace('#','');
+  if (m === 'shop' || m === 'b2b'){
+    setMode(m, {silent:true});
+  } else {
+    // default b2b — just set the pill
+    applyPalette('b2b');
+    movePill('b2b');
+  }
+}
+window.addEventListener('hashchange', initFromHash);
+window.addEventListener('resize', ()=>{
+  const active = tabs.b2b.getAttribute('aria-selected') === 'true' ? 'b2b' : 'shop';
+  movePill(active);
+});
+
+/* ==========================================================
+   SCROLL REVEAL
+   ========================================================== */
+let io = null;
+function observeReveals(scope){
+  const els = (scope || document).querySelectorAll('.reveal');
+  if (!io){
+    io = new IntersectionObserver(entries=>{
+      entries.forEach(en=>{
+        if (en.isIntersecting){
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    }, {rootMargin:'0px 0px -8% 0px', threshold:.05});
+  }
+  els.forEach(el => {
+    if (!el.classList.contains('in')) io.observe(el);
+  });
+}
+
+/* ==========================================================
+   CARD HOVER SPOTLIGHT
+   ========================================================== */
+function bindSpotlights(){
+  document.querySelectorAll('.card, .product, .kat, [data-tilt]').forEach(c=>{
+    if (c.__spotBound) return;
+    c.__spotBound = true;
+    c.addEventListener('mousemove', e=>{
+      const r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
+  });
+}
+
+/* ==========================================================
+   BOOT
+   ========================================================== */
+window.addEventListener('load', ()=>{
+  // Need fonts before measuring pill
+  if (document.fonts && document.fonts.ready){
+    document.fonts.ready.then(()=> { initFromHash(); });
+  } else {
+    initFromHash();
+  }
+  observeReveals();
+  bindSpotlights();
+});
+
+// Initial pill placement (pre-fonts) so it doesn't flash at 0
+requestAnimationFrame(()=>{
+  applyPalette('b2b');
+  movePill('b2b');
+  observeReveals();
+  bindSpotlights();
+});
+</script>
+
+</body>
+</html>
